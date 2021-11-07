@@ -1,10 +1,8 @@
 import os
-from typing import Any, Dict
+from typing import Dict
 import requests
 import logging
-import json
-from kubernetes import client, config
-
+from time import sleep
 
 def get_relay_block_num(ekg_hostname: str, ekg_port: int):
     url = f"http://{ekg_hostname}:{ekg_port}/"
@@ -65,11 +63,18 @@ def load_int_env_var(key: str, default: int = None) -> int:
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 logging.basicConfig(level=LOG_LEVEL)
 
-notify_tip(
-    network_magic=load_int_env_var("NETWORK_MAGIC"),
-    ekg_hostname=load_env_var("EKG_HOSTNAME"),
-    ekg_port=load_int_env_var("EKG_PORT"),
-    relay_public_hostname=load_env_var("RELAY_PUBLIC_HOSTNAME"),
-    relay_public_port=load_int_env_var("RELAY_PUBLIC_PORT"),
-    relay_valency=load_int_env_var("RELAY_VALENCY", 1),
-)
+while True:
+    try:
+        notify_tip(
+            network_magic=load_int_env_var("NETWORK_MAGIC"),
+            ekg_hostname=load_env_var("EKG_HOSTNAME", "localhost"),
+            ekg_port=load_int_env_var("EKG_PORT"),
+            relay_public_hostname=load_env_var("RELAY_PUBLIC_HOSTNAME"),
+            relay_public_port=load_int_env_var("RELAY_PUBLIC_PORT"),
+            relay_valency=load_int_env_var("RELAY_VALENCY", 1),
+        )
+    except Exception as err:
+        logging.error(err)
+
+    logging.debug("sleeping for a while")
+    sleep(30*60)
