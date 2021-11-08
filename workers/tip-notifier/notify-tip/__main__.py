@@ -77,4 +77,4 @@ while True:
         logging.error(err)
 
     logging.debug("sleeping for a while")
-    sleep(30*60)
+    sleep(60*60)
